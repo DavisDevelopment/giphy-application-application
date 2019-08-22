@@ -1,0 +1,7 @@
+
+*.swp
+build/js/
+    !jquery.js
+    !package.json
+    !bootstrap.bundle.min.js
+
