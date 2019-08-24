@@ -1,8 +1,11 @@
 
 {getJSON} = require './tools'
+util = require 'util'
 tools = require './tools'
 fp = require './fp'
 _ = require 'underscore'
+
+{fetch} = require('whatwg-fetch');
 
 ratings = exports.ratings = ["G", "PG"] #TODO: expand
 giphyCacheSave = (query, result) =>
@@ -19,13 +22,33 @@ giphyCacheRestore = (o) =>
     if cacheKey of sessionStorage
         return JSON.parse(sessionStorage.getItem(cacheKey))
 
+mostRecentQuery = exports.mostRecentQuery = () =>
+    try
+        return JSON.parse localStorage.getItem 'lastSearch'
+    finally
+        return null
+
+fillQuery = exports.fillQuery = (o={}) =>
+    prev = mostRecentQuery()
+    set = (k, def) =>
+        o[k] ?= (prev?[k] or def)
+    
+    # o.term ?= ""
+    # o.limit ?= 
+    o.offset ?= 0
+    # o.rating ?= ratings[0]
+    # o.lang ?= "en"
+    set 'term', ''
+    set 'limit', 10
+    set 'rating', ratings[0]
+    set 'lang', 'en'
+
+    return o
+
 # queries are cached to sessionStorage
 giphySearch = exports.search = (o={}) =>
-    o.term ?= ""
-    o.limit ?= 25
-    o.offset ?= 0
-    o.rating ?= ratings[0]
-    o.lang = "en"
+    o = fillQuery o
+    localStorage.setItem 'lastSearch', JSON.stringify(o)
     cached = giphyCacheRestore(o)
     if cached?
         return [o, cached]
@@ -35,6 +58,7 @@ giphySearch = exports.search = (o={}) =>
     result = await getJSON(url)
     giphyCacheSave(o, result)
     return [o, result]
+
 
 giphyRandom = exports.random = (o={}) =>
     o.rating ?= "PG-13"
@@ -90,10 +114,7 @@ ImgList = magic class ImgList
     constructor: (images) ->
         @data = do =>
             for label, img of images
-                {
-                    label: label,
-                    ...img
-                }
+                _.extend({label}, img)
         
         @images = (new Img(img) for img in @data)
         for img, idx in @images

@@ -3,13 +3,15 @@
 
 util = require 'util'
 _ = require 'underscore'
+if not navigator.clipboard?
+    board = require 'clipboard-polyfill'
 
 isFunction = exports.isFunction = (x) => typeof x is "function"
-exports.getJSON = (url, options) => fetch(url, options).then (res) => res.json()
+exports.getJSON = (url, options) => fetch(url, options).then((res) => res.json())
 
 clipboard = exports.clipboard = {}
 clipboard.writeText = (text) =>
-    await navigator.clipboard.writeText("#{text}")
+    await (navigator.clipboard or board).writeText("#{text}")
     return true
 
 property = exports.property = (type, name, isStatic=no, proxy) =>

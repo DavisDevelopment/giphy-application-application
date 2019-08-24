@@ -1,0 +1,25 @@
+{
+  "name": "giphyapp",
+  "version": "1.0.0",
+  "description": "gif search tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ryan Davis",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "regenerator-runtime": "^0.13.3"
+  },
+  "dependencies": {
+    "clipboard-polyfill": "^2.8.6",
+    "localforage": "^1.7.3",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0"
+  }
+}

@@ -18,10 +18,12 @@ ContentPane = exports.ContentPane = magic class ContentPane
 
     loadNextPage: () ->
         if @pagination? and @query?
-            newQuery = {
-                ...@query,
-                offset: @query.offset + @pagination.count
-            }
+            q = @query
+            newQuery = _.extend({}, q, {offset: q.offset + @pagination.count})
+            # newQuery = {
+            #     ...q,
+            #     offset: @query.offset + @pagination.count
+            # }
             console.log newQuery
             [query, results] = await giphy.search(newQuery)
             images = sb.processSearchResults query, results
@@ -30,6 +32,7 @@ ContentPane = exports.ContentPane = magic class ContentPane
             @appendImages images
             return yes
         else
+            console.log "not fired"
             return no
 
     clear: () ->
@@ -43,9 +46,12 @@ ContentPane = exports.ContentPane = magic class ContentPane
             for x in e
                 @append(x)
         else if e instanceof Container
+            console.log "append Container"
             @containers.push e
-            e.inject @e, (me, c) =>
-                me.append(c)
+            # e.inject @e, (me, c) =>
+            #     me.append(c)
+            @e.append e.element
+            console.log e.element
         else if e instanceof giphy.Giph
             @append(new Container(this, e))
 
@@ -72,7 +78,8 @@ Container = exports.Container = magic class Container
 
     constructor: (pane, g) ->
         @contentPane = pane
-        @element = document.createElement('div', {is: 'giphy-div'})
+        # @element = document.createElement('div', {is: 'giphy-div'})
+        @element = window.GiphyDiv()
         @element.container = this
         @element.image.giph = g
         
